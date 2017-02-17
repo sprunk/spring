@@ -10,6 +10,7 @@ class COverheadController : public CCameraController
 {
 public:
 	COverheadController();
+	~COverheadController();
 
 	const std::string GetName() const { return "ta"; }
 
