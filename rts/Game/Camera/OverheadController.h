@@ -30,6 +30,9 @@ public:
 
 	bool flipped;
 
+	void ConfigNotify(const std::string& key, const std::string& value);
+	void ConfigUpdate();
+
 private:
 	float middleClickScrollSpeed;
 	float height;
