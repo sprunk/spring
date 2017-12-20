@@ -86,6 +86,7 @@ public:
 	 * @brief Causes this CommandAI to execute the attack order c
 	 */
 	virtual void ExecuteAttack(Command& c);
+	virtual void ExecuteAreaAttack(Command& c);
 
 	/**
 	 * @brief executes the stop command c
@@ -132,8 +133,7 @@ public:
 	int lastSelectedCommandPage;
 
 protected:
-	// return true by default so non-AirCAI's trigger FinishCommand
-	virtual bool SelectNewAreaAttackTargetOrPos(const Command& ac) { return true; }
+	bool SelectNewAreaAttackTargetOrPos(const Command& ac);
 
 	bool IsAttackCapable() const;
 	bool SkipParalyzeTarget(const CUnit* target);

@@ -36,7 +36,6 @@ public:
 
 private:
 	bool AirAutoGenerateTarget(AAirMoveType*);
-	bool SelectNewAreaAttackTargetOrPos(const Command& ac);
 	void PushOrUpdateReturnFight() {
 		CCommandAI::PushOrUpdateReturnFight(commandPos1, commandPos2);
 	}

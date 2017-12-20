@@ -634,6 +634,11 @@ bool CCommandAI::AllowedCommand(const Command& c, bool fromSynced)
 			}
 		} break;
 
+		case CMD_AREA_ATTACK: {
+			if (c.params.size() < 4)
+				return false;
+		} break;
+
 		case CMD_MOVE: {
 			if (!ud->canmove)
 				return false;
@@ -1409,6 +1414,25 @@ int CCommandAI::UpdateTargetLostTimer(int targetUnitID)
 	return (std::max(--targetLostTimer, 0));
 }
 
+void CCommandAI::ExecuteAreaAttack(Command& c)
+{
+	assert(owner->unitDef->canAttack);
+
+	if (targetDied)
+		targetDied = false;
+
+	if (!inCommand) {
+		inCommand = true;
+		SelectNewAreaAttackTargetOrPos(c);
+		return;
+	}
+
+	if (orderTarget && orderTarget->pos.SqDistance2D(c.GetPos(0)) > Square(c.params[3])) {
+		// target wandered out of the attack-area
+		SetOrderTarget(NULL);
+		SelectNewAreaAttackTargetOrPos(c);
+	}
+}
 
 void CCommandAI::ExecuteAttack(Command& c)
 {
@@ -1485,6 +1509,10 @@ void CCommandAI::SlowUpdate()
 		}
 		case CMD_ATTACK: {
 			ExecuteAttack(c);
+			return;
+		}
+		case CMD_AREA_ATTACK: {
+			ExecuteAreaAttack(c);
 			return;
 		}
 		case CMD_MANUALFIRE: {
@@ -1833,5 +1861,39 @@ void CCommandAI::SlowUpdateMaxSpeed() {
 
 	assert(!c.params.empty());
 	owner->moveType->SetWantedMaxSpeed(c.params[0]);
+}
+
+bool CCommandAI::SelectNewAreaAttackTargetOrPos(const Command& ac)
+{
+	assert(ac.GetID() == CMD_AREA_ATTACK);
+	if (ac.GetID() != CMD_AREA_ATTACK) {
+		return false;
+	}
+
+	const float3& pos = ac.GetPos(0);
+	const float radius = ac.params[3];
+
+	std::vector<int> enemyUnitIDs;
+	CGameHelper::GetEnemyUnits(pos, radius, owner->allyteam, enemyUnitIDs);
+
+	if (enemyUnitIDs.empty()) {
+		float3 attackPos = pos + (gsRNG.NextVector() * radius);
+		attackPos.y = CGround::GetHeightAboveWater(attackPos.x, attackPos.z);
+
+		owner->AttackGround(attackPos, (ac.options & INTERNAL_ORDER) == 0, false);
+		SetGoal(attackPos, owner->pos);
+	} else {
+		// note: the range of randFloat() is inclusive of 1.0f
+		const unsigned int unitIdx = std::min<int>(gsRNG.NextFloat() * enemyUnitIDs.size(), enemyUnitIDs.size() - 1);
+		const unsigned int unitID = enemyUnitIDs[unitIdx];
+
+		CUnit* targetUnit = unitHandler->GetUnitUnsafe(unitID);
+
+		SetOrderTarget(targetUnit);
+		owner->AttackUnit(targetUnit, (ac.options & INTERNAL_ORDER) == 0, false);
+		SetGoal(targetUnit->pos, owner->pos);
+	}
+
+	return true;
 }
 
