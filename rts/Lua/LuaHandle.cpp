@@ -593,7 +593,7 @@ void CLuaHandle::GameOver(const std::vector<unsigned char>& winningAllyTeams)
 }
 
 
-void CLuaHandle::GamePaused(int playerID, bool paused)
+bool CLuaHandle::GamePaused(int playerID, bool paused)
 {
 	LUA_CALL_IN_CHECK(L);
 	luaL_checkstack(L, 5, __func__);
@@ -602,13 +602,17 @@ void CLuaHandle::GamePaused(int playerID, bool paused)
 
 	static const LuaHashString cmdStr(__func__);
 	if (!cmdStr.GetGlobalFunc(L))
-		return;
+		return false;
 
 	lua_pushnumber(L, playerID);
 	lua_pushboolean(L, paused);
 
 	// call the routine
-	RunCallInTraceback(L, cmdStr, 2, 0, traceBack.GetErrFuncIdx(), false);
+	RunCallInTraceback(L, cmdStr, 2, 1, traceBack.GetErrFuncIdx(), false);
+
+	const bool retval = GetHandleSynced(L) && luaL_optboolean(L, -1, false);
+	pop(L, 1);
+	return retval;
 }
 
 

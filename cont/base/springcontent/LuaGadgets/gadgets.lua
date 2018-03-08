@@ -880,7 +880,9 @@ end
 
 function gadgetHandler:GamePaused(playerID, paused)
   for _,g in r_ipairs(self.GamePausedList) do
-    g:GamePaused(playerID, paused)
+    if g:GamePaused(playerID, paused) and isSyncedCode then
+      return true
+    end
   end
 end
 

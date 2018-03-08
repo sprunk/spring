@@ -341,14 +341,15 @@ void CGame::ClientReadNet()
 					break;
 				}
 
-				gs->paused = !!inbuf[2];
+				AddTraffic(playerNum, packetCode, dataLength);
+				lastReadNetTime = spring_gettime();
+
+				const bool wantedPause = !!inbuf[2];
+				if (eventHandler.GamePaused(playerNum, wantedPause))
+					break;
+				gs->paused = wantedPause;
 
 				LOG("%s %s the game", playerHandler->Player(playerNum)->name.c_str(), (gs->paused ? "paused" : "unpaused"));
-
-				eventHandler.GamePaused(playerNum, gs->paused);
-				AddTraffic(playerNum, packetCode, dataLength);
-
-				lastReadNetTime = spring_gettime();
 			} break;
 
 			case NETMSG_INTERNAL_SPEED: {

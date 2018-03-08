@@ -109,7 +109,7 @@ class CLuaHandle : public CEventClient
 		void GamePreload() override;
 		void GameStart() override;
 		void GameOver(const std::vector<unsigned char>& winningAllyTeams) override;
-		void GamePaused(int playerID, bool paused) override;
+		bool GamePaused(int playerID, bool paused) override;
 		void GameFrame(int frameNum) override;
 		void GameID(const unsigned char* gameID, unsigned int numBytes) override;
 

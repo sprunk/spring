@@ -474,9 +474,9 @@ void CEventHandler::GameOver(const std::vector<unsigned char>& winningAllyTeams)
 	ITERATE_EVENTCLIENTLIST(GameOver, winningAllyTeams);
 }
 
-void CEventHandler::GamePaused(int playerID, bool paused)
+bool CEventHandler::GamePaused(int playerID, bool paused)
 {
-	ITERATE_EVENTCLIENTLIST(GamePaused, playerID, paused);
+	return ControlIterateDefFalse(listGamePaused, &CEventClient::GamePaused, playerID, paused);
 }
 
 void CEventHandler::GameFrame(int gameFrame)

@@ -111,7 +111,7 @@ class CEventClient
 		virtual void GamePreload() {}
 		virtual void GameStart() {}
 		virtual void GameOver(const std::vector<unsigned char>& winningAllyTeams) {}
-		virtual void GamePaused(int playerID, bool paused) {}
+		virtual bool GamePaused(int playerID, bool paused) { return false; }
 		virtual void GameFrame(int gameFrame) {}
 		virtual void GameID(const unsigned char* gameID, unsigned int numBytes) {}
 
