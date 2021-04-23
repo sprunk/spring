@@ -174,11 +174,12 @@ int CInMapDraw::GotNetMsg(std::shared_ptr<const netcode::RawPacket>& packet)
 					inMapDrawerModel->AddLine(pos1, pos2, playerID);
 			} break;
 			case MAPDRAW_ERASE: {
-				short int x, z;
+				short int x, z, r;
 				pckt >> x;
 				pckt >> z;
+				pckt >> r;
 				float3 pos(x, 0, z);
-				inMapDrawerModel->EraseNear(pos, playerID);
+				inMapDrawerModel->EraseNear(pos, playerID, (float) r);
 			} break;
 		}
 	} catch (const netcode::UnpackPacketException& ex) {
