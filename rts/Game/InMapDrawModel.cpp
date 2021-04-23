@@ -133,7 +133,7 @@ bool CInMapDrawModel::AddLine(const float3& constPos1, const float3& constPos2, 
 }
 
 
-void CInMapDrawModel::EraseNear(const float3& constPos, int playerID)
+void CInMapDrawModel::EraseNear(const float3& constPos, int playerID, float radius)
 {
 	if (!playerHandler.IsValidPlayer(playerID))
 		return;
@@ -148,8 +148,6 @@ void CInMapDrawModel::EraseNear(const float3& constPos, int playerID)
 		return;
 	}
 
-
-	const float radius = 100.0f;
 	const int maxY = drawQuadsY - 1;
 	const int maxX = drawQuadsX - 1;
 	const int yStart = (int) std::max(0,    int((pos.z - radius) * QUAD_SCALE));
