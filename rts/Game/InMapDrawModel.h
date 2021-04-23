@@ -33,7 +33,7 @@ public:
 
 	bool AddPoint(const float3& pos, const std::string& label, int playerID);
 	bool AddLine(const float3& pos1, const float3& pos2, int playerID);
-	void EraseNear(const float3& pos, int playerID, float radius = 100.f);
+	void EraseNear(const float3& pos, int playerID, float radius);
 	void EraseAll();
 
 	size_t GetNumPoints() const { return numPoints; }
